@@ -38,7 +38,7 @@ const BlogList = () => {
         });
 
         // Remove the blog from the state after successful deletion
-        setBlogs(prevBlogs => prevBlogs.filter(blog => blog._id !== id));
+        setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== id));
       } catch (error) {
         alert('Error deleting blog');
         console.error('Error deleting blog:', error);
@@ -73,35 +73,51 @@ const BlogList = () => {
           <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-6 px-4 mx-10">
             {blogs.length > 0 ? (
               blogs.map(blog => (
-                <div key={blog._id} className="bg-white rounded-lg shadow-md p-6">
-                  <img src={blog.media} alt="Blog Media" className="w-full h-auto" />
-                  <h2 className="text-xl font-semibold text-gray-800">{blog.title}</h2>
+                <div key={blog.id} className="bg-white rounded-lg shadow-md p-6">
+       <div className="w-full h-fit hover:bg-[#FAF8F5] hover:translate-x-0 hover:scale-105 flex justify-center items-center p-2">
+              {/* {blog.media && (
+                blog.media.endsWith(".mp4") ? (
+                  <video controls src={blog.media} className="w-full h-[200px] object-cover mb-4"></video>
+                ) : (
+                  <img src={blog.media} alt="Blog Media" className="w-full h-[200px] object-cover mb-4" />
+                )
+              )} */}
+               {blog.media && (
+              blog.media.endsWith(".mp4") ? (
+                <video controls src={`http://localhost:3000/${blog.media}`} className="w-full h-[200px] object-cover mb-4"></video>
+              ) : (
+                <img src={`http://localhost:3000/${blog.media}`} alt="Blog Media" className="w-full h-[200px] object-cover mb-4" />
+              )
+            )}
+            </div>                  <h2 className="text-xl font-semibold text-gray-800">{blog.title}</h2>
                   <div
                     className="text-gray-700 text-lg mb-4"
                     dangerouslySetInnerHTML={{ __html: blog.content }}
                   />
                   <p className="text-gray-600 mt-2">Media: <a href={blog.media} target="_blank" rel="noopener noreferrer">{blog.media}</a> </p>
+           
                   {/* Display Tags */}
                   {blog.tags && blog.tags.length > 0 && (
                     <div className="mt-2">
                       <span className="font-semibold text-gray-700"> </span>
                       {renderTags(blog.tags)}
                     </div>
-                  )}                  <p className="text-gray-600 mt-2"> Author: {blog.author}</p>
+                  )}                 
+                   <p className="text-gray-600 mt-2"> Author: {blog.author}</p>
                   <p className="text-gray-600 mt-2"> Status: {blog.status}</p>
                   <p className="text-gray-600 mt-2"> Created At: {blog.createdAt}</p>
                   <p className="text-gray-600 mt-2">Scheduled at: {blog.scheduledDate}</p>
                   <p className="text-gray-600 mt-2">{blog.isPublished ? 'Published' : 'Not Published'}</p>
                   <p className="text-gray-600 mt-2">{blog.views}</p>
                   <p className="text-gray-600 mt-2">{blog.shares}</p>
-                  <p className="text-gray-600 mt-2">{blog.comments}</p>
+                  {/* <p className="text-gray-600 mt-2">{blog.comments}</p> */}
                   <div className="mt-4 flex space-x-4">
-                    <button onClick={() => handleEdit(blog._id)}
+                    <button onClick={() => handleEdit(blog.id)}
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(blog._id)}
+                      onClick={() => handleDelete(blog.id)}
                       className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
                     >
                       Delete
