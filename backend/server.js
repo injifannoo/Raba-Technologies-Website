@@ -3,6 +3,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const authRoutes = require('./routes/authRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 
 dotenv.config();
 
@@ -18,7 +20,8 @@ app.use(bodyParser.json());
 
 // Routes
 app.use("/api/contact", require("./routes/contactRoutes"));
-app.use("/api/blogs", require("./routes/blogRoutes"));  // Make sure this is correctly set up
+app.use('/api/auth', authRoutes);
+app.use('/api/blogs', blogRoutes);
 
 
 // Start the server
