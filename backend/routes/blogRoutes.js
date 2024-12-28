@@ -1,22 +1,55 @@
-const express = require("express");
-const blogController=require('../controllers/blogController')
-const { authenticate, authorize } = require('../middleware/authMiddleware');
+import express from "express";
+import multer from "multer";
+import path from "path";
+import blogController from "../controllers/blogController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+const { authenticate, authorize } = authMiddleware;
 
 const router = express.Router();
-router.post('/', authenticate, authorize(['Super Admin', 'Editor']), blogController.createBlog);
-router.get('/', authenticate, blogController.getAllBlogs);
-router.put('/:id', authenticate, authorize(['Super Admin', 'Editor']), blogController.updateBlog);
-router.delete('/:id', authenticate, authorize(['Super Admin']), blogController.deleteBlogs);
 
-module.exports = router;
-// // Get all blogs
-// router.get("/", getAllBlogs);
+router.get("/", blogController.getAllBlogs); // No authenticate middleware here
+//router.get("/:id", blogController.updateBlog); // No authenticate middleware here
+router.get("/:id", blogController.getBlogById); // Use getBlogById to fetch the blog
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Directory to store uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
 
-// // Create a new blog
-// router.post("/", createBlog);
-// //update blogs
-// router.put("/",updateBlog);
-// //delete blogs
-// router.delete("/", deleteBlogs);
+const fileFilter = (req, file, cb) => {
+  const allowedMimeTypes = ["image/jpeg", "image/png", "video/mp4"];
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type. Only JPEG, PNG, and MP4 files are allowed."), false);
+  }
+};
 
-module.exports = router;
+const upload = multer({ storage, fileFilter });
+
+router.post(
+  "/",
+  authenticate,
+  authorize(["admin", "editor"]),
+  upload.single("media"), // Accept single media upload
+  blogController.createBlog
+);
+router.put(
+  "/:id",
+  authenticate,
+  authorize(["admin", "editor"]),
+  upload.single("media"),
+  blogController.updateBlog
+);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize(["admin"]),
+  blogController.deleteBlog // Fixed the name
+);
+
+export default router;

@@ -1,10 +1,8 @@
 require("dotenv").config();
-const bcrypt = require('bcryptjs');
-const mongoose = require('mongoose');
-const connectDB = require('../config/db'); // Import the connectDB function
+const dotenv = require("dotenv");
 
-// Connect to MongoDB using the connectDB function
-connectDB();
+const mongoose = require("mongoose");
+// const bcrypt = require("bcryptjs");
 
 // User schema
 const userSchema = new mongoose.Schema({
@@ -14,53 +12,32 @@ const userSchema = new mongoose.Schema({
 });
 
 // User model
-const User = mongoose.model('User', userSchema);
-
-// Create an admin user
-// async function createAdmin() {
-//   const hashedPassword = await bcrypt.hash('Raba@123!NIG', 10); // Replace 'password' with your admin password
-//   const adminUser = new User({
-//     email: 'admin@example.com',
-//     password: hashedPassword,
-//     role: 'admin',
-//   });
-
-//   try {
-//     await adminUser.save();
-//     console.log('Admin user created');
-//     mongoose.disconnect(); // Disconnect after operation is complete
-//   } catch (err) {
-//     console.log('Error creating admin user:', err);
-//     mongoose.disconnect(); // Disconnect in case of error
-//   }
-// }
-
-// // Call the function to create the admin user
-// createAdmin();
-
+const User = mongoose.model("User", userSchema);
 
 const createAdminUser = async () => {
   try {
-    // Connect to the database
-    await mongoose.connect(process.env.MONGO_URI, {
+    const mongoUri = process.env.MONGO_URI;
+    console.log("Connecting to MongoDB at:", mongoUri);
+
+    await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
     // Check if an admin user already exists
-    const existingAdmin = await User.findOne({ email: "raba1@gmail.com" });
+    const existingAdmin = await User.findOne({ email: "rabb@gmail.com" });
     if (existingAdmin) {
       console.log("Admin user already exists.");
       return;
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash("Raba@12", 10);
+    // const hashedPassword = await bcrypt.hash("Raba@1", 10);
 
     // Create the admin user
     const adminUser = new User({
-      email: "raba@gmail.com",
-      password: hashedPassword,
+      email: "rabb@gmail.com",
+      password: "Raba@1",
       role: "admin",
     });
 

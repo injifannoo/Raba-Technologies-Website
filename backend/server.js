@@ -1,27 +1,43 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const dotenv = require("dotenv");
-const connectDB = require("./config/db");
-const authRoutes = require('./routes/authRoutes');
-const blogRoutes = require('./routes/blogRoutes');
+// const express from "express");
+import express from "express";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import authRoutes from './routes/authRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js'
+import cors from 'cors';
+import contactRoutes from './routes/contactRoutes.js';
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-dotenv.config();
 
 const app = express();
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Add the frontend URL here
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
+  credentials: true
+}));
+dotenv.config();
+
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
 connectDB();
 
 // Middleware
-app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-app.use("/api/contact", require("./routes/contactRoutes"));
+app.use("/api/contact", contactRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
+app.use('/api/analytics/', analyticsRoutes)
 
 
 // Start the server
