@@ -13,5 +13,6 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
+// This is a dummy comment to trigger a commit
 
 export default mongoose.model('User', userSchema);
